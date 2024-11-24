@@ -68,7 +68,7 @@ const shouldRender = computed(() => {
 
 // Function to render the page
 const renderPage = async () => {
-  if (!props.doc || !root.value) {
+  if (!props.doc || !props.parentRoot) {
     return
   }
 
@@ -102,9 +102,9 @@ const renderPage = async () => {
       rotation: pageRotation,
     })
 
-    const canvas = root.value.querySelector('canvas') as HTMLCanvasElement
-    const textLayerDiv = root.value.querySelector('.textLayer') as HTMLDivElement
-    const annotationLayerDiv = root.value.querySelector('.annotationLayer') as HTMLDivElement
+    const canvas = root.value?.querySelector('canvas') as HTMLCanvasElement
+    const textLayerDiv = root.value?.querySelector('.textLayer') as HTMLDivElement
+    const annotationLayerDiv = root.value?.querySelector('.annotationLayer') as HTMLDivElement
 
     if (!canvas) {
       return
@@ -366,9 +366,11 @@ watch(
 .vue-pdf-embed__page {
   position: relative;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .vue-pdf-embed__page canvas {
+  max-width: 100%;
   width: 100%;
   height: 100%;
 }
