@@ -30,7 +30,7 @@ const emit = defineEmits([
   'visibility-changed',
 ])
 
-const isEnabledLogging = true
+const isEnabledLogging = false
 
 const pageWidth = ref<number>(0)
 const pageHeight = ref<number>(0)
@@ -355,7 +355,7 @@ watch(
         left: 0,
         width: pageWidth + 'px',
         height: pageHeight + 'px',
-        background: '#444',
+        background: '#FFFFFF',
       }"
     ></div>
   </div>
