@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, inject, computed, shallowRef } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, inject, computed, shallowRef, nextTick } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { emptyElement, releaseCanvas } from './utils'
@@ -302,7 +302,8 @@ onBeforeUnmount(() => {
 // Watch for changes in relevant props
 watch(
   () => [props.scale, props.rotation, props.width, props.height],
-  () => {
+  async () => {
+    await nextTick()
     // Recalculate dimensions and re-render if needed
     if (shouldRender.value) {
       cleanup()
