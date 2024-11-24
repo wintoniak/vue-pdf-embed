@@ -33,8 +33,8 @@ const emit = defineEmits([
 
 const isEnabledLogging = false
 
-const pageWidth = ref<number>(0)
-const pageHeight = ref<number>(0)
+const pageWidth = ref<number>()
+const pageHeight = ref<number>()
 
 const root = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
