@@ -53,6 +53,7 @@ const getPageDimensions = (ratio: number): [number, number] => {
     height = props.height
     width = height / ratio
   } else {
+    console.log('root.value:', root.value, 'root.value!.clientWidth:', root.value!.clientWidth)
     width = props.width ?? root.value!.clientWidth
     height = width * ratio
   }
