@@ -91,8 +91,8 @@ const renderPage = async () => {
     pageWidth.value = actualWidth
     pageHeight.value = actualHeight
 
-    const cssWidth = `${Math.floor(actualWidth)}px`
-    const cssHeight = `${Math.floor(actualHeight)}px`
+    //const cssWidth = `${Math.floor(actualWidth)}px`
+    //const cssHeight = `${Math.floor(actualHeight)}px`
     const pageWidthInPDF = isTransposed ? viewHeight : viewWidth
     const pageScale = actualWidth / pageWidthInPDF
 
