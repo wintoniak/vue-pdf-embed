@@ -3,7 +3,7 @@ import { ref, watch, onMounted, onBeforeUnmount, inject, computed } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { emptyElement, releaseCanvas } from './utils'
-import type { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs';
+import type { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 
 interface Props {
   id: string
@@ -16,15 +16,18 @@ interface Props {
   imageResourcesPath: string
   width: number
   height: number
-  pagesToRender: number[]
+  pagesToRender?: number[]
 }
-const props = defineProps<Props>()
+
+const props = withDefaults(defineProps<Props>(), {
+  pagesToRender: () => [],
+})
 
 const emit = defineEmits([
   'internal-link-clicked',
   'rendered',
   'rendering-failed',
-  'visibility-changed'
+  'visibility-changed',
 ])
 
 const isEnabledLogging = true
@@ -58,8 +61,9 @@ const getPageDimensions = (ratio: number): [number, number] => {
 }
 
 // Computed property to determine if the page should render
-const shouldRender = computed(() => props.pagesToRender.includes(props.pageNum))
-
+const shouldRender = computed(() => {
+  return props.pagesToRender?.includes(props.pageNum) ?? false
+})
 // Watch shouldRender to render or cleanup accordingly
 watch(
   () => shouldRender.value,
