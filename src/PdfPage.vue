@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, inject } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, inject, computed } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { emptyElement, releaseCanvas } from './utils'
@@ -16,6 +16,7 @@ interface Props {
   imageResourcesPath: string
   width: number
   height: number
+  pagesToRender: number[]
 }
 const props = defineProps<Props>()
 
@@ -23,6 +24,7 @@ const emit = defineEmits([
   'internal-link-clicked',
   'rendered',
   'rendering-failed',
+  'visibility-changed'
 ])
 
 const isEnabledLogging = true
@@ -55,7 +57,23 @@ const getPageDimensions = (ratio: number): [number, number] => {
   return [width, height]
 }
 
-// Function to render the page when it becomes visible
+// Computed property to determine if the page should render
+const shouldRender = computed(() => props.pagesToRender.includes(props.pageNum))
+
+// Watch shouldRender to render or cleanup accordingly
+watch(
+  () => shouldRender.value,
+  (newValue) => {
+    if (newValue) {
+      renderPage()
+    } else {
+      cleanup()
+    }
+  },
+  { immediate: true }
+)
+
+// Function to render the page
 const renderPage = async () => {
   if (!props.doc || !root.value) {
     return
@@ -158,7 +176,7 @@ const renderPage = async () => {
         viewport,
       })
       const annotationRenderTask = annotationLayer.render({
-        annotations: await page?.getAnnotations({ intent: 'display' }),
+        annotations: await page.getAnnotations({ intent: 'display' }),
         div: annotationLayerDiv,
         imageResourcesPath: props.imageResourcesPath,
         linkService,
@@ -191,7 +209,7 @@ const handleRenderError = (error: Error) => {
   }
 }
 
-// Function to clean up resources when the page is not visible
+// Function to clean up resources when the page is not rendered
 const cleanup = () => {
   if (renderingTask) {
     renderingTask.cancel()
@@ -264,12 +282,10 @@ const setup = async () => {
     observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
+        const wasVisible = isVisible.value
         isVisible.value = entry.isIntersecting
-        if (isVisible.value) {
-          renderPage()
-        } else {
-          console.log('Page not visible', props.pageNum)
-          cleanup()
+        if (isVisible.value !== wasVisible) {
+          emit('visibility-changed', { pageNum: props.pageNum, isVisible: isVisible.value })
         }
       },
       { root: null, threshold: 0.1 }
@@ -294,7 +310,8 @@ onBeforeUnmount(() => {
 watch(
   () => [props.scale, props.rotation, props.width, props.height],
   () => {
-    if (isVisible.value) {
+    // Recalculate dimensions and re-render if needed
+    if (shouldRender.value) {
       cleanup()
       renderPage()
     }
@@ -325,7 +342,7 @@ watch(
       :style="{ position: 'absolute', top: 0, left: 0 }"
     ></div>
     <div
-      v-if="!isVisible"
+      v-if="!shouldRender"
       class="placeholder"
       :style="{
         position: 'absolute',

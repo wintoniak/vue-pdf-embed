@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, provide, shallowRef, toRef, type Ref } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  provide,
+  shallowRef,
+  toRef,
+  ref,
+  watch,
+  type Ref,
+} from 'vue'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import type { OnProgressParameters, PDFDocumentProxy } from 'pdfjs-dist'
 
@@ -11,7 +20,7 @@ import {
   releaseChildCanvases,
 } from './utils'
 import { useVuePdfEmbed } from './composables'
-import PdfPage from './PdfPage.vue' // Import the PdfPage component
+import PdfPage from './PdfPage.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -78,26 +87,43 @@ const emit = defineEmits<{
 
 const root = shallowRef<HTMLDivElement | null>(null)
 
-const pageNums = computed(() => {
-  return props.page
-    ? [props.page]
-    : doc.value
-      ? Array.from({ length: doc.value.numPages }, (_, i) => i + 1)
-      : []
-})
-
+// Initialize doc using the custom composable
 const { doc } = useVuePdfEmbed({
   onError: (e) => {
     emit('loading-failed', e)
   },
   onPasswordRequest({ callback, isWrongPassword }) {
-    emit('password-requested', { callback, isWrongPassword })
+    emit('password-requested', { callback, isWrongPassword });
   },
   onProgress: (progressParams) => {
     emit('progress', progressParams)
   },
   source: toRef(props, 'source'),
 }) as { doc: Ref<PDFDocumentProxy> }
+
+// Reactive variable to hold page numbers
+const pageNums = ref<number[]>([])
+
+// Watch for doc changes to initialize pageNums
+watch(
+  doc,
+  (newDoc) => {
+    if (newDoc) {
+      if (props.page) {
+        pageNums.value = [props.page]
+      } else {
+        pageNums.value = Array.from(
+          { length: newDoc.numPages },
+          (_, i) => i + 1
+        )
+      }
+      emit('loaded', newDoc)
+    } else {
+      pageNums.value = []
+    }
+  },
+  { immediate: true }
+)
 
 const onPageRendered = () => {
   emit('rendered')
@@ -225,75 +251,41 @@ const print = async (dpi = 300, filename = '', allPages = false) => {
   }
 }
 
-/**
- * Renders the PDF document as canvas element(s) and additional layers.
- */
-/*  */
-
-/**
- * Renders the page content.
- * @param page - Page proxy.
- * @param viewport - Page viewport.
- * @param canvas - HTML canvas.
- */
-/* const renderPage = async (
-  page: PDFPageProxy,
-  viewport: PageViewport,
-  canvas: HTMLCanvasElement
-) => {
-  canvas.width = viewport.width
-  canvas.height = viewport.height
-  await page.render({
-    canvasContext: canvas.getContext('2d')!,
-    viewport,
-  }).promise
-} */
-
-/* watch(
-  doc,
-  (newDoc) => {
-    if (newDoc) {
-      emit('loaded', newDoc)
-    }
-  },
-  { immediate: true }
-) */
-
-/* watch(
-  () => [
-    doc.value,
-    props.annotationLayer,
-    props.height,
-    props.imageResourcesPath,
-    props.page,
-    props.rotation,
-    props.scale,
-    props.textLayer,
-    props.width,
-  ],
-  async ([newDoc]) => {
-    if (newDoc) {
-      if (renderingController) {
-        renderingController.isAborted = true
-        await renderingController.promise
-      }
-
-      releaseChildCanvases(root.value)
-      renderingController = {
-        isAborted: false,
-        promise: render(),
-      }
-
-      await renderingController.promise
-      renderingController = null
-    }
-  },
-  { immediate: true }
-) */
-
 onBeforeUnmount(() => {
   releaseChildCanvases(root.value)
 })
+
+// Define the pagesToRender array
+const pagesToRender = ref<number[]>([])
+// Define a Set to keep track of visible pages
+const visiblePages = new Set<number>()
+
+// Handler for visibility-changed events
+const onVisibilityChanged = ({
+  pageNum,
+  isVisible,
+}: {
+  pageNum: number
+  isVisible: boolean
+}) => {
+  if (isVisible) {
+    visiblePages.add(pageNum)
+  } else {
+    visiblePages.delete(pageNum)
+  }
+
+  // Recalculate pagesToRender
+  const newPagesToRender = new Set<number>()
+  visiblePages.forEach((visiblePageNum) => {
+    const pages = [
+      visiblePageNum - 1,
+      visiblePageNum,
+      visiblePageNum + 1,
+    ].filter((num) => num > 0 && doc.value && num <= doc.value.numPages)
+    pages.forEach((num) => newPagesToRender.add(num))
+  })
+  pagesToRender.value = Array.from(newPagesToRender)
+}
 
 defineExpose({
   doc,
@@ -307,21 +299,6 @@ defineExpose({
     <div v-for="pageNum in pageNums" :key="pageNum">
       <slot name="before-page" :page="pageNum" />
 
-      <!--<div
-        :id="id && `${id}-${pageNum}`"
-        class="vue-pdf-embed__page"
-        :style="{
-          '--scale-factor': pageScales[i],
-          position: 'relative',
-        }"
-      >
-        <canvas />
-
-        <div v-if="textLayer" class="textLayer" />
-
-        <div v-if="annotationLayer" class="annotationLayer" />
-      </div>-->
-
       <PdfPage
         :id="id && `${id}-${pageNum}`"
         :page-num="pageNum"
@@ -333,9 +310,11 @@ defineExpose({
         :annotation-layer="annotationLayer"
         :text-layer="textLayer"
         :image-resources-path="imageResourcesPath"
+        :pages-to-render="pagesToRender"
         @internal-link-clicked="handleInternalLinkClick"
         @rendered="onPageRendered"
         @rendering-failed="onRenderingFailed"
+        @visibility-changed="onVisibilityChanged"
       />
 
       <slot name="after-page" :page="pageNum" />
