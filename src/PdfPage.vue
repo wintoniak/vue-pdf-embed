@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, inject, computed, shallowRef, nextTick } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, inject, computed, shallowRef } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { emptyElement, releaseCanvas } from './utils'
@@ -91,8 +91,8 @@ const renderPage = async () => {
     pageWidth.value = actualWidth
     pageHeight.value = actualHeight
 
-    //const cssWidth = `${Math.floor(actualWidth)}px`
-    //const cssHeight = `${Math.floor(actualHeight)}px`
+    const cssWidth = `${Math.floor(actualWidth)}px`
+    const cssHeight = `${Math.floor(actualHeight)}px`
     const pageWidthInPDF = isTransposed ? viewHeight : viewWidth
     const pageScale = actualWidth / pageWidthInPDF
 
@@ -116,8 +116,8 @@ const renderPage = async () => {
     const scaledViewport = viewport.clone({ scale: adjustedScale })
 
     canvas.style.display = 'block'
-    //canvas.style.width = cssWidth
-    //canvas.style.height = cssHeight
+    canvas.style.width = cssWidth
+    canvas.style.height = cssHeight
 
     canvas.width = scaledViewport.width
     canvas.height = scaledViewport.height
@@ -302,8 +302,7 @@ onBeforeUnmount(() => {
 // Watch for changes in relevant props
 watch(
   () => [props.scale, props.rotation, props.width, props.height],
-  async () => {
-    await nextTick()
+  () => {
     // Recalculate dimensions and re-render if needed
     if (shouldRender.value) {
       cleanup()
@@ -333,8 +332,6 @@ watch(
     class="vue-pdf-embed__page"
     :style="{
       position: 'relative',
-      width: props.width ? (pageWidth + 'px') : '100%',
-      height: props.height ? (pageHeight + 'px') : '100%',
     }"
   >
     <canvas></canvas>
