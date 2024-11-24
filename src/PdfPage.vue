@@ -65,19 +65,6 @@ const shouldRender = computed(() => {
   return props.pagesToRender?.includes(props.pageNum) ?? false
 })
 
-// Watch shouldRender to render or cleanup accordingly
-watch(
-  () => shouldRender.value,
-  (newValue) => {
-    if (newValue) {
-      renderPage()
-    } else {
-      cleanup()
-    }
-  },
-  { immediate: true }
-)
-
 // Function to render the page
 const renderPage = async () => {
   if (!props.doc || !root.value) {
@@ -321,6 +308,19 @@ watch(
       renderPage()
     }
   }
+)
+
+// Watch shouldRender to render or cleanup accordingly
+watch(
+  () => shouldRender.value,
+  (newValue) => {
+    if (newValue) {
+      renderPage()
+    } else {
+      cleanup()
+    }
+  },
+  { immediate: true }
 )
 </script>
 
