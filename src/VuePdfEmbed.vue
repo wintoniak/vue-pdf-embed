@@ -311,6 +311,7 @@ defineExpose({
         :text-layer="textLayer"
         :image-resources-path="imageResourcesPath"
         :pages-to-render="pagesToRender"
+        :parent-root="root"
         @internal-link-clicked="handleInternalLinkClick"
         @rendered="onPageRendered"
         @rendering-failed="onRenderingFailed"

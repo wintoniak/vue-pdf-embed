@@ -17,6 +17,7 @@ interface Props {
   width?: number
   height?: number
   pagesToRender?: number[]
+  parentRoot?: HTMLElement | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -53,8 +54,7 @@ const getPageDimensions = (ratio: number): [number, number] => {
     height = props.height
     width = height / ratio
   } else {
-    console.log('root.value:', root.value, 'root.value!.clientWidth:', root.value!.clientWidth)
-    width = props.width ?? root.value!.clientWidth
+    width = props.width ?? props.parentRoot!.clientWidth
     height = width * ratio
   }
 
