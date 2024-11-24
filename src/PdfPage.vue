@@ -116,8 +116,8 @@ const renderPage = async () => {
     const scaledViewport = viewport.clone({ scale: adjustedScale })
 
     canvas.style.display = 'block'
-    canvas.style.width = cssWidth
-    canvas.style.height = cssHeight
+    //canvas.style.width = cssWidth
+    //canvas.style.height = cssHeight
 
     canvas.width = scaledViewport.width
     canvas.height = scaledViewport.height
