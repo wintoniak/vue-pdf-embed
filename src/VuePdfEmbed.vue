@@ -322,10 +322,3 @@ defineExpose({
     </div>
   </div>
 </template>
-
-<style scoped>
-.vue-pdf-embed {
-  width: 100%;
-  height: 100%;
-}
-</style>

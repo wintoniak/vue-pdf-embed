@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, inject, computed } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, inject, computed, shallowRef } from 'vue'
 import { AnnotationLayer, TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { emptyElement, releaseCanvas } from './utils'
@@ -36,7 +36,7 @@ const isEnabledLogging = false
 const pageWidth = ref<number>()
 const pageHeight = ref<number>()
 
-const root = ref<HTMLElement | null>(null)
+const root = shallowRef<HTMLElement | null>(null)
 const isVisible = ref(false)
 let observer: IntersectionObserver | null = null
 let renderingTask: { promise: Promise<void>; cancel: () => void } | null = null
@@ -54,7 +54,6 @@ const getPageDimensions = (ratio: number): [number, number] => {
     height = props.height
     width = height / ratio
   } else {
-    console.log('parentRoot', props.parentRoot, 'w', props.parentRoot?.clientWidth)
     width = props.width ?? props.parentRoot!.clientWidth
     height = width * ratio
   }
