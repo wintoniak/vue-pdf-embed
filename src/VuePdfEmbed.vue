@@ -72,8 +72,8 @@ const props = withDefaults(
   }
 )
 
-const height = computed(() => props.height ?? 0)
-const width = computed(() => props.width ?? 0)
+const height = computed(() => props.height ?? undefined)
+const width = computed(() => props.width ?? undefined)
 
 const emit = defineEmits<{
   (e: 'internal-link-clicked', value: number): void

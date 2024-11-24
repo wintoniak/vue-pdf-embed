@@ -14,8 +14,8 @@ interface Props {
   annotationLayer: boolean
   textLayer: boolean
   imageResourcesPath: string
-  width: number
-  height: number
+  width?: number
+  height?: number
   pagesToRender?: number[]
 }
 
