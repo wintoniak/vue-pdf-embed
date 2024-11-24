@@ -332,8 +332,8 @@ watch(
     class="vue-pdf-embed__page"
     :style="{
       position: 'relative',
-      width: pageWidth + 'px',
-      height: pageHeight + 'px',
+      width: (pageWidth + 'px') || '100%',
+      height: (pageHeight + 'px') || '100%',
     }"
   >
     <canvas></canvas>
