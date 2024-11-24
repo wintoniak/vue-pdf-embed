@@ -366,11 +366,9 @@ watch(
 .vue-pdf-embed__page {
   position: relative;
   overflow: hidden;
-  max-width: 100%;
 }
 
 .vue-pdf-embed__page canvas {
-  max-width: 100%;
   width: 100%;
   height: 100%;
 }
