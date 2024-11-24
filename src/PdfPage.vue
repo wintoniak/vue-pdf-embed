@@ -64,6 +64,7 @@ const getPageDimensions = (ratio: number): [number, number] => {
 const shouldRender = computed(() => {
   return props.pagesToRender?.includes(props.pageNum) ?? false
 })
+
 // Watch shouldRender to render or cleanup accordingly
 watch(
   () => shouldRender.value,
