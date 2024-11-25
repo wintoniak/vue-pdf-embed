@@ -91,8 +91,8 @@ const renderPage = async () => {
     pageWidth.value = actualWidth
     pageHeight.value = actualHeight
 
-    //const cssWidth = `${Math.floor(actualWidth)}px`
-    //const cssHeight = `${Math.floor(actualHeight)}px`
+    const cssWidth = `${Math.floor(actualWidth)}px`
+    const cssHeight = `${Math.floor(actualHeight)}px`
     const pageWidthInPDF = isTransposed ? viewHeight : viewWidth
     const pageScale = actualWidth / pageWidthInPDF
 
@@ -116,8 +116,8 @@ const renderPage = async () => {
     const scaledViewport = viewport.clone({ scale: adjustedScale })
 
     canvas.style.display = 'block'
-    //canvas.style.width = cssWidth
-    //canvas.style.height = cssHeight
+    canvas.style.width = cssWidth
+    canvas.style.height = cssHeight
 
     canvas.width = scaledViewport.width
     canvas.height = scaledViewport.height
