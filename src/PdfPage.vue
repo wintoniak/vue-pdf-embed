@@ -335,8 +335,10 @@ watch(
         position: 'relative',
       },
       {
-        width: pageWidth + 'px',
-        height: pageHeight + 'px',
+        maxWidth: pageWidth + 'px',
+        maxHeight: pageHeight + 'px',
+        width: '100%',
+        height: '100%',
       },
     ]"
   >
