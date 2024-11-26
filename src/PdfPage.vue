@@ -337,6 +337,8 @@ watch(
       {
         minWidth: pageWidth + 'px',
         minHeight: pageHeight + 'px',
+        width: '100%',
+        height: '100%',
       },
     ]"
   >
