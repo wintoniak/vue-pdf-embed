@@ -335,10 +335,8 @@ watch(
         position: 'relative',
       },
       {
-        minWidth: pageWidth + 'px',
-        minHeight: pageHeight + 'px',
-        width: '100%',
-        height: '100%',
+        width: pageWidth + 'px',
+        height: pageHeight + 'px',
       },
     ]"
   >
@@ -360,8 +358,8 @@ watch(
         position: 'absolute',
         top: 0,
         left: 0,
-        width: pageWidth + 'px',
-        height: pageHeight + 'px',
+        width: '100%',
+        height: '100%',
         background: '#FFFFFF',
       }"
     ></div>
