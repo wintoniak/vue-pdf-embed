@@ -354,9 +354,6 @@ watch(
     <div
       class="placeholder"
       :style="{
-        position: 'absolute',
-        top: 0,
-        left: 0,
         width: pageWidth + 'px',
         height: pageHeight + 'px',
         background: '#FFFFFF',
