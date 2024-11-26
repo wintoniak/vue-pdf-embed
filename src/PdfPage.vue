@@ -354,6 +354,7 @@ watch(
     <div
       class="placeholder"
       :style="{
+        position: shouldRender ? 'absolute' : 'static',
         width: pageWidth + 'px',
         height: pageHeight + 'px',
         background: '#FFFFFF',
