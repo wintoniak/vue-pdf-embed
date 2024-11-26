@@ -335,8 +335,8 @@ watch(
         position: 'relative',
       },
       {
-        width: !shouldRender ? pageWidth + 'px' : '100%',
-        height: !shouldRender ? pageHeight + 'px' : '100%',
+        minWidth: pageWidth + 'px',
+        minHeight: pageHeight + 'px',
       },
     ]"
   >
