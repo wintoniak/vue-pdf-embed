@@ -8,6 +8,7 @@ import {
   ref,
   watch,
   type Ref,
+  onMounted,
 } from 'vue'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import type { OnProgressParameters, PDFDocumentProxy } from 'pdfjs-dist'
@@ -82,6 +83,7 @@ const emit = defineEmits<{
   (e: 'password-requested', value: PasswordRequestParams): void
   (e: 'progress', value: OnProgressParameters): void
   (e: 'rendered'): void
+  (e: 'page-rendered'): void
   (e: 'rendering-failed', value: Error): void
 }>()
 
@@ -126,7 +128,7 @@ watch(
 )
 
 const onPageRendered = () => {
-  emit('rendered')
+  emit('page-rendered')
 }
 
 const onRenderingFailed = (e: Error) => {
@@ -286,6 +288,11 @@ const onVisibilityChanged = ({
   })
   pagesToRender.value = Array.from(newPagesToRender)
 }
+
+// Initial render event
+onMounted(() => {
+  emit('rendered')
+})
 
 defineExpose({
   doc,
