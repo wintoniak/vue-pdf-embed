@@ -8,7 +8,6 @@ import {
   ref,
   watch,
   type Ref,
-  onMounted,
 } from 'vue'
 import { PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs'
 import type { OnProgressParameters, PDFDocumentProxy } from 'pdfjs-dist'
@@ -289,10 +288,14 @@ const onVisibilityChanged = ({
   pagesToRender.value = Array.from(newPagesToRender)
 }
 
-// Initial render event
-onMounted(() => {
-  emit('rendered')
-})
+// Initial render event after pageNums is first set
+watch(
+  pageNums,
+  () => {
+    emit('rendered')
+  },
+  { immediate: true }
+)
 
 defineExpose({
   doc,
