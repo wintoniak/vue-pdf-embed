@@ -352,7 +352,6 @@ watch(
       :style="{ position: 'absolute', top: 0, left: 0 }"
     ></div>
     <div
-      v-if="!shouldRender"
       class="placeholder"
       :style="{
         position: 'absolute',
@@ -361,6 +360,9 @@ watch(
         width: pageWidth + 'px',
         height: pageHeight + 'px',
         background: '#FFFFFF',
+        opacity: !shouldRender ? 1 : 0,
+        zIndex: !shouldRender ? 1 : 0,
+        pointerEvents: !shouldRender ? 'auto' : 'none',
       }"
     ></div>
   </div>
