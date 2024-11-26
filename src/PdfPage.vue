@@ -336,9 +336,8 @@ watch(
       },
       {
         maxWidth: pageWidth + 'px',
-        maxHeight: pageHeight + 'px',
         width: '100%',
-        height: '100%',
+        aspectRatio: `${pageWidth} / ${pageHeight}`,
       },
     ]"
   >
