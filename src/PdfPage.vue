@@ -174,7 +174,7 @@ const renderPage = async () => {
         imageResourcesPath: props.imageResourcesPath,
         linkService,
         page,
-        renderForms: false,
+        renderForms: true,
         viewport: annotationLayerViewport,
       })
       renderTasks.push(annotationRenderTask)
