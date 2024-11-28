@@ -29,6 +29,10 @@ const props = withDefaults(
      */
     annotationLayer: boolean
     /**
+     * Whether to enable a form layer.
+     */
+    formLayer?: boolean
+    /**
      * Desired page height.
      */
     height?: number
@@ -69,6 +73,7 @@ const props = withDefaults(
   {
     rotation: 0,
     scale: 1,
+    formLayer: false,
   }
 )
 
@@ -318,6 +323,7 @@ defineExpose({
         :width="width"
         :height="height"
         :annotation-layer="annotationLayer"
+        :form-layer="formLayer"
         :text-layer="textLayer"
         :image-resources-path="imageResourcesPath"
         :pages-to-render="pagesToRender"

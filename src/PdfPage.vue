@@ -12,6 +12,7 @@ interface Props {
   scale: number
   rotation: number
   annotationLayer: boolean
+  formLayer: boolean
   textLayer: boolean
   imageResourcesPath: string
   width?: number
@@ -65,6 +66,101 @@ const getPageDimensions = (ratio: number): [number, number] => {
 const shouldRender = computed(() => {
   return props.pagesToRender?.includes(props.pageNum) ?? false
 })
+
+// Function to render form layer
+const renderFormFields = (
+  formLayerDiv: HTMLElement,
+  annotations: {
+    rect: number[]
+    subtype: string
+    fieldName: string
+    fieldType: string
+    checkBox: boolean
+    radioButton: boolean
+    combo: boolean
+  }[],
+  viewport: {
+    width: number
+    height: number
+  },
+  annotationLayerViewport: {
+    convertToViewportRectangle: (rect: number[]) => number[]
+  }
+) => {
+  const transformedAnnotations = annotations.map((annotation) => {
+    const transformedRect = annotationLayerViewport.convertToViewportRectangle(annotation.rect)
+    // Identify form field types
+    let fieldCategory = null
+    if (annotation.subtype === 'Widget') {
+      const fieldType = annotation.fieldType
+      switch (fieldType) {
+        case 'Tx':
+          fieldCategory = 'Text Field'
+          break
+        case 'Btn':
+          if (annotation.checkBox) {
+            fieldCategory = 'Checkbox'
+          } else if (annotation.radioButton) {
+            fieldCategory = 'Radio Button'
+          } else {
+            fieldCategory = 'Push Button'
+          }
+          break
+        case 'Ch':
+          if (annotation.combo) {
+            fieldCategory = 'Combo Box'
+          } else {
+            fieldCategory = 'List Box'
+          }
+          break
+        case 'Sig':
+          fieldCategory = 'Signature Field'
+          break
+        default:
+          fieldCategory = 'Unknown Field Type'
+      }
+    }
+
+    return {
+      rect: annotation.rect,
+      transformedRect,
+      type: annotation.subtype,
+      fieldName: annotation.fieldName || null,
+      fieldCategory,
+      annotation,
+    }
+  })
+
+  formLayerDiv.innerHTML = ''
+
+  transformedAnnotations.forEach((annotation) => {
+    if (annotation.fieldCategory) {
+      const [x1, y1, x2, y2] = annotation.transformedRect
+      const width = x2 - x1
+      const height = y1 - y2
+
+      const formFieldDiv = document.createElement('div')
+      formFieldDiv.style.position = 'absolute'
+      formFieldDiv.style.left = `${x1}px`
+      formFieldDiv.style.top = `${viewport.height - y2}px`
+      formFieldDiv.style.width = `${width}px`
+      formFieldDiv.style.height = `${height}px`
+      formFieldDiv.style.backgroundColor = 'rgba(255, 0, 0, 0)'
+      formFieldDiv.dataset.fieldName = annotation.fieldName || ''
+      formFieldDiv.dataset.fieldCategory = annotation.fieldCategory
+
+      // Optional: Add a class for styling or identification
+      formFieldDiv.classList.add('form-field-overlay')
+
+      // Append to the form layer
+      formLayerDiv.appendChild(formFieldDiv)
+    }
+  })
+
+  // Adjust formLayerDiv dimensions
+  formLayerDiv.style.width = `${viewport.width}px`
+  formLayerDiv.style.height = `${viewport.height}px`
+}
 
 // Function to render the page
 const renderPage = async () => {
@@ -160,7 +256,6 @@ const renderPage = async () => {
     if (props.annotationLayer && annotationLayerDiv) {
       const annotationLayerViewport = viewport.clone({ dontFlip: true })
       const annotations = await page.getAnnotations({ intent: 'display' })
-      console.log(annotations)
       const annotationLayer = new AnnotationLayer({
         accessibilityManager: null,
         annotationCanvasMap: null,
@@ -180,6 +275,9 @@ const renderPage = async () => {
         viewport: annotationLayerViewport,
       })
       renderTasks.push(annotationRenderTask)
+
+      const formLayerDiv = document.querySelector('#' + props.id + ' .formLayer') as HTMLElement
+      renderFormFields(formLayerDiv, annotations, viewport, annotationLayerViewport)
     }
 
     try {
@@ -353,6 +451,11 @@ watch(
       v-if="annotationLayer"
       class="annotationLayer"
       :style="{ position: 'absolute', top: 0, left: 0 }"
+    ></div>
+    <div
+      v-if="formLayer"
+      class="formLayer"
+      :style="{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }"
     ></div>
     <div
       v-if="!shouldRender"
