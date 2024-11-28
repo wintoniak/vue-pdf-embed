@@ -159,6 +159,8 @@ const renderPage = async () => {
     // Render annotation layer if enabled
     if (props.annotationLayer && annotationLayerDiv) {
       const annotationLayerViewport = viewport.clone({ dontFlip: true })
+      const annotations = await page.getAnnotations({ intent: 'display' })
+      console.log(annotations)
       const annotationLayer = new AnnotationLayer({
         accessibilityManager: null,
         annotationCanvasMap: null,
@@ -169,7 +171,7 @@ const renderPage = async () => {
         viewport,
       })
       const annotationRenderTask = annotationLayer.render({
-        annotations: await page.getAnnotations({ intent: 'display' }),
+        annotations,
         div: annotationLayerDiv,
         imageResourcesPath: props.imageResourcesPath,
         linkService,
