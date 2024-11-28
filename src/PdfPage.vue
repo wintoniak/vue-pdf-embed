@@ -148,8 +148,6 @@ const renderFormFields = (
       formFieldDiv.style.backgroundColor = 'rgba(255, 0, 0, 0)'
       formFieldDiv.dataset.fieldName = annotation.fieldName || ''
       formFieldDiv.dataset.fieldCategory = annotation.fieldCategory
-
-      // Optional: Add a class for styling or identification
       formFieldDiv.classList.add('form-field-overlay')
 
       // Append to the form layer
