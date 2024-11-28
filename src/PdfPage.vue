@@ -145,7 +145,6 @@ const renderFormFields = (
       formFieldDiv.style.top = `${viewport.height - y2}px`
       formFieldDiv.style.width = `${width}px`
       formFieldDiv.style.height = `${height}px`
-      formFieldDiv.style.backgroundColor = 'rgba(255, 0, 0, 0)'
       formFieldDiv.dataset.fieldName = annotation.fieldName || ''
       formFieldDiv.dataset.fieldCategory = annotation.fieldCategory
       formFieldDiv.classList.add('form-field-overlay')
