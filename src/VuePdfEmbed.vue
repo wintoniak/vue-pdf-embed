@@ -297,7 +297,9 @@ const onVisibilityChanged = ({
 watch(
   pageNums,
   () => {
-    emit('rendered')
+    if (pageNums.value.length > 0) {
+      emit('rendered')
+    }
   },
   { immediate: true }
 )
