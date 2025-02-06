@@ -1,6 +1,6 @@
 {
   "name": "vue-pdf-embed",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "PDF embed component for Vue",
   "keywords": [
     "vue",
@@ -38,7 +38,7 @@
     "format": "prettier . --write --ignore-path .gitignore"
   },
   "dependencies": {
-    "pdfjs-dist": "^4.8.69"
+    "pdfjs-dist": "^4.10.38"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
